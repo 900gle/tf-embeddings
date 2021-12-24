@@ -1,0 +1,4 @@
+elasticsearch
+numpy
+tensorflow
+tensorflow-hub
