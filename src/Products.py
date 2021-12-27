@@ -8,6 +8,8 @@ from elasticsearch.helpers import bulk
 # examples (https://tfhub.dev/google/universal-sentence-encoder/2).
 import tensorflow as tf
 import tensorflow_hub as hub
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 ##### INDEXING #####
@@ -125,8 +127,9 @@ if __name__ == '__main__':
     GPU_LIMIT = 0.5
 
     print("Downloading pre-trained embeddings from tensorflow hub...")
-    embed = hub.Module("https://tfhub.dev/google/universal-sentence-encoder/4")
+    embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
     text_ph = tf.placeholder(tf.string)
+
     embeddings = embed(text_ph)
     print("Done.")
 
