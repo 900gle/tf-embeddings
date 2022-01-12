@@ -62,7 +62,7 @@ def embed_text(input):
 ##### MAIN SCRIPT #####
 
 if __name__ == '__main__':
-    INDEX_NAME = "korquad"
+    INDEX_NAME = "products_multi"
     INDEX_FILE = "../data/posts/index.json"
 
     SEARCH_SIZE = 3
