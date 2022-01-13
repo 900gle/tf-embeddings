@@ -59,7 +59,7 @@ def paragraph_index(paragraph):
 
 
 def index_batch(docs):
-    name = [doc["name"] for doc in docs]
+    name = [[doc["name"], doc["category"]] for doc in docs]
     name_vectors = embed_text(name)
     # paragraph_vectors = [paragraph_index(doc["paragraph"]) for doc in docs]
     requests = []
@@ -70,13 +70,19 @@ def index_batch(docs):
         request["name_vector"] = name_vectors[i]
         # request["paragraph_vector"] = paragraph_vectors[i]
         requests.append(request)
-    bulk(client, requests)
+    # bulk(client, requests)
 
 
 ##### EMBEDDING #####
 
-def embed_text(input):
-    vectors = model(input)
+def embed_text(name):
+
+    print(name)
+
+
+    vectors = model(name)
+
+
     return [vector.numpy().tolist() for vector in vectors]
 
 

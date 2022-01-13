@@ -51,13 +51,8 @@ def index_data():
     print("Done indexing.")
 
 def index_batch_a(docs):
-    name = [doc["name"] for doc in docs]
-    category = [doc["category"] for doc in docs]
-
-    # print(name)
-    # print(category)
-
-    name_vectors = embed_text_a([name, category])
+    name = [[doc["name"], doc["category"]] for doc in docs]
+    name_vectors = embed_text_a(name)
     requests = []
     for i, doc in enumerate(docs):
         request = doc
@@ -68,13 +63,8 @@ def index_batch_a(docs):
     bulk(client, requests)
 
 def index_batch_b(docs):
-    name = [doc["name"] for doc in docs]
-    category = [doc["category"] for doc in docs]
-
-    # print(name)
-    # print(category)
-
-    name_vectors = embed_text_b([name, category])
+    name = [[doc["name"], doc["category"]] for doc in docs]
+    name_vectors = embed_text_b(name)
     requests = []
     for i, doc in enumerate(docs):
         request = doc
@@ -86,9 +76,6 @@ def index_batch_b(docs):
 ##### EMBEDDING #####
 
 def embed_text_a(input):
-    print()
-    print(input)
-
     vectors = embed_a(input)
     return [vector.numpy().tolist() for vector in vectors]
 

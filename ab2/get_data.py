@@ -53,7 +53,7 @@ def handle_query():
         body={
             "size": SEARCH_SIZE,
             "query": script_query_a,
-            "_source": {"includes": ["name", "price"]}
+            "_source": {"includes": ["name", "category"]}
         }
     )
 
@@ -62,7 +62,7 @@ def handle_query():
         body={
             "size": SEARCH_SIZE,
             "query": script_query_b,
-            "_source": {"includes": ["name", "price"]}
+            "_source": {"includes": ["name", "category"]}
         }
     )
     search_time = time.time() - search_start
