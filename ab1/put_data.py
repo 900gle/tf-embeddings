@@ -50,20 +50,6 @@ def index_data():
     client.indices.refresh(index=INDEX_NAME_B)
     print("Done indexing.")
 
-
-def paragraph_index(paragraph):
-    # 문장단위 분리
-    avg_paragraph_vec = numpy.zeros((1, 512))
-    sent_count = 0
-    for sent in kss.split_sentences(paragraph[0:100]):
-        # 문장을 embed 하기
-        # vector들을 평균으로 더해주기
-        avg_paragraph_vec += embed_text([sent])
-        sent_count += 1
-    avg_paragraph_vec /= sent_count
-    return avg_paragraph_vec.ravel(order='C')
-
-
 def index_batch_a(docs):
     name = [doc["name"] for doc in docs]
     name_vectors = embed_text_a(name)

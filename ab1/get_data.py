@@ -53,7 +53,7 @@ def handle_query():
         body={
             "size": SEARCH_SIZE,
             "query": script_query_a,
-            "_source": {"includes": ["name", "price"]}
+            "_source": {"includes": ["name", "category"]}
         }
     )
 
@@ -62,7 +62,7 @@ def handle_query():
         body={
             "size": SEARCH_SIZE,
             "query": script_query_b,
-            "_source": {"includes": ["name", "price"]}
+            "_source": {"includes": ["name", "category"]}
         }
     )
     search_time = time.time() - search_start
@@ -72,15 +72,11 @@ def handle_query():
     print()
     print("CASE A : ")
     for hit in response_a["hits"]["hits"]:
-        print("id: {}, score: {}".format(hit["_id"], hit["_score"]))
-        print(hit["_source"]["name"])
-        print()
+        print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
     print()
     print("CASE B : ")
     for hit in response_b["hits"]["hits"]:
-        print("id: {}, score: {}".format(hit["_id"], hit["_score"]))
-        print(hit["_source"]["name"])
-        print()
+        print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
 
 ##### INDEXING #####
 
@@ -88,7 +84,7 @@ def index_data():
     print("Creating the '" + INDEX_NAME_A + "' index.")
     print("Creating the '" + INDEX_NAME_B + "' index.")
     client.indices.delete(index=INDEX_NAME_A, ignore=[404])
-    client.indices.delete(index=INDEX_NAME_A, ignore=[404])
+    client.indices.delete(index=INDEX_NAME_B, ignore=[404])
 
     with open(INDEX_FILE) as index_file:
         source = index_file.read().strip()

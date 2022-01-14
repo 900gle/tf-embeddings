@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
-import json
-
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
 
 import tensorflow_hub as hub
-import tensorflow_text
-import kss, numpy
+from elasticsearch import Elasticsearch
 
 
 ##### SEARCHING #####
@@ -26,33 +21,13 @@ def handle_query():
     query_vector = embed_text([query])[0]
     embedding_time = time.time() - embedding_start
 
-    script_query_a = {
-        "script_score": {
-            "query": {"match_all": {}},
-            "script": {
-                "source": "cosineSimilarity(params.query_vector, doc['name_vector']) + 1.0",
-                "params": {"query_vector": query_vector}
-            }
-        }
-    }
-
-    script_query_b = {
-        "script_score": {
-            "query": {"match_all": {}},
-            "script": {
-                "source": "cosineSimilarity(params.query_vector, doc['name_vector']) + 1.0",
-                "params": {"query_vector": query_vector}
-            }
-        }
-    }
-
     search_start = time.time()
     response_a = client.search(
         index=INDEX_NAME_A,
         body={
             "size": SEARCH_SIZE,
-            "query": script_query_a,
-            "_source": {"includes": ["name", "price"]}
+            "query": query(query,query_vector),
+            "_source": {"includes": ["name", "category"]}
         }
     )
 
@@ -60,26 +35,34 @@ def handle_query():
         index=INDEX_NAME_B,
         body={
             "size": SEARCH_SIZE,
-            "query": script_query_b,
-            "_source": {"includes": ["name", "price"]}
+            "query": query(query,query_vector),
+            "_source": {"includes": ["name", "category"]}
         }
     )
     search_time = time.time() - search_start
 
-
-    print("검색어 :" , query)
     print()
+    print("검색어 :" , query)
     print("CASE A : ")
     for hit in response_a["hits"]["hits"]:
-        print("id: {}, score: {}".format(hit["_id"], hit["_score"]))
-        print(hit["_source"]["name"])
-        print()
+        print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
     print()
     print("CASE B : ")
     for hit in response_b["hits"]["hits"]:
-        print("id: {}, score: {}".format(hit["_id"], hit["_score"]))
-        print(hit["_source"]["name"])
-        print()
+        print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
+
+##### QUERY #####
+def query(query, vector):
+    script_query = {
+        "script_score": {
+            "query": {"match_all": {}},
+            "script": {
+                "source": "cosineSimilarity(params.query_vector, doc['name_vector']) + 1.0",
+                "params": {"query_vector": vector}
+            }
+        }
+    }
+    return script_query
 
 ##### EMBEDDING #####
 

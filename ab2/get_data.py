@@ -72,15 +72,11 @@ def handle_query():
     print()
     print("CASE A : ")
     for hit in response_a["hits"]["hits"]:
-        print("id: {}, score: {}".format(hit["_id"], hit["_score"]))
-        print("name: {}, category: {}".format(hit["_source"]["name"], hit["_source"]["category"]))
-        print()
+        print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
     print()
     print("CASE B : ")
     for hit in response_b["hits"]["hits"]:
-        print("id: {}, score: {}".format(hit["_id"], hit["_score"]))
-        print("name: {}, category: {}".format(hit["_source"]["name"], hit["_source"]["category"]))
-        print()
+        print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
 
 ##### EMBEDDING #####
 
