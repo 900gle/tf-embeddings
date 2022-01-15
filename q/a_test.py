@@ -7,6 +7,7 @@ from elasticsearch import Elasticsearch
 import tensorflow_hub as hub
 import tensorflow_text
 
+
 ##### SEARCHING #####
 
 def run_query_loop():
@@ -16,6 +17,7 @@ def run_query_loop():
         except KeyboardInterrupt:
             return
 
+
 def handle_query():
     query = input("Enter query: ")
 
@@ -24,17 +26,34 @@ def handle_query():
     embedding_time = time.time() - embedding_start
 
     script_query = {
-        "script_score": {
+        "function_score": {
             "query": {
-                "multi_match" : {
-                    "query":    query,
-                    "fields": [ "name^5", "category" ]
+                "multi_match": {
+                    "query": query,
+                    "fields": [
+                        "name^5",
+                        "category"
+                    ]
                 }
             },
-            "script": {
-                "source": "cosineSimilarity(params.query_vector, doc['name_vector']) + 1.0",
-                "params": {"query_vector": query_vector}
-            }
+            "functions": [
+                {
+                    "script_score": {
+                        "script": {
+                            "source": "cosineSimilarity(params.query_vector, doc['name_vector']) + 1.0",
+                            "params": {
+                                "query_vector": query_vector
+                            }
+                        }
+                    },
+                    "weight": 50
+                },
+                {
+                    "filter": { "match": { "name": query } },
+                    "random_score": {},
+                    "weight": 23
+                }
+            ]
         }
     }
 
@@ -58,11 +77,13 @@ def handle_query():
         print(hit["_source"])
         print()
 
+
 ##### EMBEDDING #####
 
 def embed_text(input):
     vectors = model(input)
     return [vector.numpy().tolist() for vector in vectors]
+
 
 ##### MAIN SCRIPT #####
 
