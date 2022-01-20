@@ -1,0 +1,38 @@
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "dynamic": "true",
+    "_source": {
+      "enabled": "true"
+    },
+    "properties": {
+      "name": {
+        "type": "text",
+        "fielddata": true
+      },
+      "feature_vector": {
+        "type": "dense_vector",
+        "dims": 512
+      },
+      "price": {
+        "type": "keyword"
+      },
+      "id": {
+        "type": "keyword"
+      },
+      "category": {
+        "type": "text",
+        "fielddata": true
+      },
+      "weight": {
+        "type": "float"
+      },
+      "populr": {
+        "type": "integer"
+      }
+    }
+  }
+}
