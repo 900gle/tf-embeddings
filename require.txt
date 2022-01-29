@@ -10,3 +10,4 @@ flask_restful
 Api
 Resource
 matplotlib
+pandas
