@@ -11,6 +11,7 @@ import tensorflow_text
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 ##### SEARCHING #####
 
 def get_result(script_query):
@@ -25,6 +26,7 @@ def get_result(script_query):
 
     return [hit["_score"] for hit in response["hits"]["hits"]]
 
+
 def handle_query():
     query = "나이키 남성 신발"
     query_vector = embed_text([query])[0]
@@ -33,7 +35,7 @@ def handle_query():
         "function_score": {
             "query": {
                 "bool": {
-                    "must" : [
+                    "must": [
                         {
                             "multi_match": {
                                 "query": query,
@@ -43,7 +45,7 @@ def handle_query():
                                 ]
                             }
                         }],
-                    "should":[
+                    "should": [
                         {
                             "multi_match": {
                                 "query": query,
@@ -58,8 +60,8 @@ def handle_query():
                         }
                     ]
                 }
-            }
-            ,
+            },
+            "boost_mode": "multiply",
             "functions": [
                 {
                     "script_score": {
@@ -80,7 +82,7 @@ def handle_query():
         "function_score": {
             "query": {
                 "bool": {
-                    "must" : [
+                    "must": [
                         {
                             "multi_match": {
                                 "query": query,
@@ -90,7 +92,7 @@ def handle_query():
                                 ]
                             }
                         }],
-                    "should":[
+                    "should": [
                         {
                             "multi_match": {
                                 "query": query,
@@ -105,8 +107,8 @@ def handle_query():
                         }
                     ]
                 }
-            }
-            ,
+            },
+            "boost_mode": "multiply",
             "functions": [
                 {
                     "script_score": {
@@ -117,7 +119,7 @@ def handle_query():
                             }
                         }
                     },
-                    "weight": 0.1
+                    "weight": 0.2
                 }
             ]
         }
@@ -127,7 +129,7 @@ def handle_query():
         "function_score": {
             "query": {
                 "bool": {
-                    "must" : [
+                    "must": [
                         {
                             "multi_match": {
                                 "query": query,
@@ -137,7 +139,7 @@ def handle_query():
                                 ]
                             }
                         }],
-                    "should":[
+                    "should": [
                         {
                             "multi_match": {
                                 "query": query,
@@ -152,8 +154,8 @@ def handle_query():
                         }
                     ]
                 }
-            }
-            ,
+            },
+            "boost_mode": "multiply",
             "functions": [
                 {
                     "script_score": {
@@ -164,7 +166,7 @@ def handle_query():
                             }
                         }
                     },
-                    "weight": 0.1
+                    "weight": 0.3
                 }
             ]
         }
@@ -176,13 +178,13 @@ def handle_query():
     y2 = get_result(script_query2)
     y3 = get_result(script_query3)
 
-    plt.xlim([1, SEARCH_SIZE])      # X축의 범위: [xmin, xmax]
-    plt.ylim([0, MAX_SCORE])     # Y축의 범위: [ymin, ymax]
+    plt.xlim([1, SEARCH_SIZE])  # X축의 범위: [xmin, xmax]
+    plt.ylim([0, MAX_SCORE])  # Y축의 범위: [ymin, ymax]
     plt.xlabel('top 10', labelpad=2)
     plt.ylabel('score', labelpad=2)
-    plt.plot(x, y1, label='query1', color='#e35f62', marker='*', linewidth=1 )
-    plt.plot(x, y2, label='query2', color='#008000', marker='*', linewidth=1 )
-    plt.plot(x, y3, label='query3', color='#3333cc', marker='*', linewidth=1 )
+    plt.plot(x, y1, label='query1', color='#e35f62', marker='*', linewidth=1)
+    plt.plot(x, y2, label='query2', color='#008000', marker='*', linewidth=1)
+    plt.plot(x, y3, label='query3', color='#3333cc', marker='*', linewidth=1)
 
     plt.legend()
     plt.title('Query score')
@@ -190,6 +192,7 @@ def handle_query():
     plt.yticks(np.arange(1, MAX_SCORE))
     plt.grid(True)
     plt.show()
+
 
 ##### EMBEDDING #####
 
@@ -212,7 +215,5 @@ if __name__ == '__main__':
     handle_query()
 
     print("Done.")
-
-
 
     # https://matplotlib.org/stable/gallery/pyplots/axline.html#sphx-glr-gallery-pyplots-axline-py
