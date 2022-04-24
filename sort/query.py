@@ -10,10 +10,16 @@ import tensorflow_text
 
 ##### SEARCHING #####
 
+def run_query_loop():
+    while True:
+        try:
+            handle_query()
+        except KeyboardInterrupt:
+            return
+
 
 def handle_query():
-    # query = input("Enter query: ")
-    query = "나이키 남성 후드티"
+    query = input("Enter query: ")
 
     embedding_start = time.time()
     query_vector = embed_text([query])[0]
@@ -22,52 +28,62 @@ def handle_query():
     script_query = {
         "function_score": {
             "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "multi_match": {
-                                "query": query,
-                                "fields": [
-                                    "name",
-                                    "category"
-                                ]
-                            }
-                        }],
-                    "should": [
-                        {
-                            "multi_match": {
-                                "query": query,
-                                "fields": [
-                                    "category1",
-                                    "category2",
-                                    "category3",
-                                    "category4",
-                                    "category5"
-                                ]
-                            }
-                        }
+                "multi_match": {
+                    "query": query,
+                    "fields": [
+                        "name^5",
+                        "category"
                     ]
                 }
             },
-            "boost_mode": "multiply",
             "functions": [
                 {
                     "script_score": {
                         "script": {
-                            "source": "cosineSimilarity(params.query_vector, 'feature_vector') * doc['weight'].value * doc['popular'].value / doc['name.keyword'].length + doc['category.keyword'].length",
+                            "source": "cosineSimilarity(params.query_vector, 'feature_vector') * doc['weight'].value * doc['populr'].value / doc['name'].length + doc['category'].length",
                             "params": {
                                 "query_vector": query_vector
                             }
                         }
                     },
-                    "weight": 0.1
+                    "weight": 1
                 }
             ]
         }
     }
 
 
-
+    # script_query = {
+    #     "function_score": {
+    #         "query": {
+    #             "multi_match": {
+    #                 "query": query,
+    #                 "fields": [
+    #                     "name^5",
+    #                     "category"
+    #                 ]
+    #             }
+    #         },
+    #         "functions": [
+    #             {
+    #                 "script_score": {
+    #                     "script": {
+    #                         "source": "cosineSimilarity(params.query_vector, doc['name_vector']) + 1.0",
+    #                         "params": {
+    #                             "query_vector": query_vector
+    #                         }
+    #                     }
+    #                 },
+    #                 "weight": 50
+    #             },
+    #             {
+    #                 "filter": { "match": { "name": query } },
+    #                 "random_score": {},
+    #                 "weight": 23
+    #             }
+    #         ]
+    #     }
+    # }
 
     search_start = time.time()
     response = client.search(
@@ -100,13 +116,13 @@ def embed_text(input):
 ##### MAIN SCRIPT #####
 
 if __name__ == '__main__':
-    INDEX_NAME = "goods"
+    INDEX_NAME = "products_r"
 
-    SEARCH_SIZE = 10
+    SEARCH_SIZE = 3
     print("Downloading pre-trained embeddings from tensorflow hub...")
     model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual-large/3")
     client = Elasticsearch(http_auth=('elastic', 'dlengus'))
 
-    handle_query()
+    run_query_loop()
 
     print("Done.")
