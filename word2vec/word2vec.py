@@ -149,6 +149,8 @@ with tf.Session() as sess:
 ######
 for i, label in enumerate(word_list):
     x, y = trained_embeddings[i]
+
+
     plt.scatter(x, y)
     plt.annotate(label, xy=(x, y), xytext=(5, 2),
                  textcoords='offset points', ha='right', va='bottom')

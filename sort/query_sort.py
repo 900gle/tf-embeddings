@@ -76,7 +76,7 @@ def handle_query():
             ]
         }
     )
-    
+
     search_time = time.time() - search_start
 
     print()
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     SEARCH_SIZE = 3
     print("Downloading pre-trained embeddings from tensorflow hub...")
     model = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual-large/3")
-    client = Elasticsearch(http_auth=('elastic', 'dlengus'))
+    client = Elasticsearch(["http://elastic:dlengus@localhost:9200"])
 
     run_query_loop()
 
