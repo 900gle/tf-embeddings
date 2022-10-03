@@ -59,9 +59,12 @@ def index_data():
     client.indices.refresh(index=INDEX_NAME_C)
     print("Done indexing.")
 
+
+
 def index_batch_a(docs):
     name = [doc["name"] for doc in docs]
-    name_vectors = embed_text(name)
+    category = [doc["category"] for doc in docs]
+    name_vectors = embed_text([name , category])
     requests = []
     for i, doc in enumerate(docs):
         request = doc
@@ -73,7 +76,8 @@ def index_batch_a(docs):
 
 def index_batch_b(docs):
     name = [doc["name"] for doc in docs]
-    name_vectors = embed_text(name)
+    category = [doc["category"] for doc in docs]
+    name_vectors = embed_text([name , category])
     requests = []
     for i, doc in enumerate(docs):
         request = doc
@@ -85,7 +89,8 @@ def index_batch_b(docs):
 
 def index_batch_c(docs):
     name = [doc["name"] for doc in docs]
-    name_vectors = embed_text(name)
+    category = [doc["category"] for doc in docs]
+    name_vectors = embed_text([name , category])
     requests = []
     for i, doc in enumerate(docs):
         request = doc

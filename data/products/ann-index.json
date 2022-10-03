@@ -20,7 +20,7 @@
         "similarity": "l2_norm"
       },
       "price": {
-        "type": "keyword"
+        "type": "double"
       },
       "id": {
         "type": "keyword"

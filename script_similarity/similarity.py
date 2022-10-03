@@ -27,7 +27,7 @@ class EsAPI:
         # ===============
         # 데이터 삽입
         # ===============
-        with open("/Users/doo/project/tf-embeddings/data/similarity_data.json", "r", encoding="utf-8") as fjson:
+        with open("/data/products/similarity_data.json", "r", encoding="utf-8") as fjson:
             data = json.loads(fjson.read())
 
             for n, i in enumerate(data):
