@@ -11,6 +11,14 @@ import tensorflow_text
 import kss, numpy
 
 
+def is_number(x):
+    try:
+        # only integers and float converts safely
+        num = float(x)
+        return True
+    except ValueError as e: # not convertable to float
+        return False
+
 ##### INDEXING #####
 def index_data():
     print("Creating the '" + INDEX_NAME_A + "' index.")
@@ -32,9 +40,7 @@ def index_data():
                 row_dict = {'private_ip': line[0], 'public_ip': line[1], 'country_code': line[2], 'city': line[3],
                             'addr1': line[4], 'location': {'lat':line[5], 'lon': line[6]}, 'no': line[7], 'country': line[8]}
 
-
-
-                if isinstance(float(line[5]), float) and isinstance(float(line[6]), float):
+                if is_number(line[5]) and is_number(line[6]):
                     csv_mapping_list.append(row_dict)
             line_count += 1
 
