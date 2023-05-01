@@ -11,3 +11,9 @@ Api
 Resource
 matplotlib
 pandas
+PyMySQL
+cryptography
+plotly
+
+
+

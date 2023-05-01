@@ -3,13 +3,12 @@
     "number_of_shards": 2,
     "number_of_replicas": 0
   },
-   "mappings": {
+  "mappings": {
     "dynamic": "true",
     "_source": {
       "enabled": "true"
     },
     "properties": {
-
       "name": {
         "type": "text"
       },

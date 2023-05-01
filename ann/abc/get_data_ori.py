@@ -10,6 +10,8 @@ import tensorflow_text
 import matplotlib.pyplot as plt
 import kss, numpy
 
+
+
 ##### SEARCHING #####
 
 def run_query_loop():
@@ -26,43 +28,66 @@ def handle_query():
     query_vector = embed_text([query])[0]
     embedding_time = time.time() - embedding_start
 
-    with open(ANN) as index_file:
-        script_query_a = index_file.read().strip()
-        script_query_a = script_query_a.replace("${query_vector}", str(query_vector))
-        script_query_a = script_query_a.replace("${SEARCH_SIZE}", str(SEARCH_SIZE))
+    script_query_a = {
+            "query": {"match_all": {}},
+            "knn": {
+                "field": "name_vector",
+                "query_vector": query_vector,
+                "k": 5,
+                "num_candidates": 50,
+                "boost": 0.1
+            },
+            "size": SEARCH_SIZE
+        }
 
-    with open(KNN) as index_file:
-        script_query_b = index_file.read().strip()
-        script_query_b = script_query_b.replace("${query_vector}", str(query_vector))
-        script_query_b = script_query_b.replace("${SEARCH_SIZE}", str(SEARCH_SIZE))
+    script_query_b = {
+        "script_score": {
+            "query": {"match_all": {}},
+            "script": {
+                "source": "cosineSimilarity(params.query_vector, 'name_vector') + 1.0",
+                "params": {"query_vector": query_vector}
+            }
+        }
+    }
 
-    with open(MATCH) as index_file:
-        script_query_c = index_file.read().strip()
-        script_query_c = script_query_c.replace("${query}", str(query))
-        script_query_c = script_query_c.replace("${SEARCH_SIZE}", str(SEARCH_SIZE))
+    script_query_c = {
+        "query": {
+            "match": {
+                "name": {
+                    "query": query,
+                    "boost": 0.9
+                }
+            }
+        },
+        "size": SEARCH_SIZE
+    }
 
     search_start = time.time()
     response_a = client.search(
         index=INDEX_NAME_A,
-        body=script_query_a
-    )
-    response_b = client.search(
-        index=INDEX_NAME_B,
-        body=script_query_b
+        body= script_query_a
     )
 
-    print(script_query_c)
+    response_b = client.search(
+        index=INDEX_NAME_B,
+        body={
+            "size": SEARCH_SIZE,
+            "query": script_query_b
+        }
+    )
+
     response_c = client.search(
         index=INDEX_NAME_C,
-        body=script_query_c
+        body= script_query_c
     )
 
     search_time = time.time() - search_start
+
     score_a =[]
     score_b =[]
     score_c =[]
 
-    print("검색어 :", query)
+    print("검색어 :" , query)
     print("CASE A : ")
     for hit in response_a["hits"]["hits"]:
         score_a.append(hit["_score"])
@@ -79,6 +104,8 @@ def handle_query():
         print("name: {}, category: {}, score: {}".format(hit["_source"]["name"], hit["_source"]["category"], hit["_score"]))
 
     t= range(0, SEARCH_SIZE)
+
+
     plt.rcParams['font.family'] = 'AppleGothic'
 
     fig, ax = plt.subplots()
@@ -125,14 +152,12 @@ if __name__ == '__main__':
     INDEX_NAME_B = "knn-index"
     INDEX_NAME_C = "match-index"
 
-    ANN = "ann/query/ann_query.json"
-    KNN = "ann/query/knn_query.json"
-    MATCH = "ann/query/match_query.json"
-
-    SEARCH_SIZE = 5
+    SEARCH_SIZE = 10
 
     print("Downloading pre-trained embeddings from tensorflow hub...")
     embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual-large/3")
+
     client = Elasticsearch(http_auth=('elastic', 'dlengus'))
+
     run_query_loop()
     print("Done.")

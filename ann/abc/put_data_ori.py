@@ -33,10 +33,12 @@ def index_data():
     count = 0
     docs = []
 
-    with open(DATA_FILE, 'r') as data_file:
-        json_object = json.loads(data_file.read())
-        for line in json_object:
-            docs.append(line)
+    with open(DATA_FILE) as data_file:
+        for line in data_file:
+            line = line.strip()
+            json_data = json.loads(line)
+
+            docs.append(json_data)
             count += 1
 
             if count % BATCH_SIZE == 0:
@@ -121,14 +123,17 @@ if __name__ == '__main__':
     INDEX_NAME_C = "match-index"
     INDEX_FILE_C = "./data/products/knn-index.json"
 
+
     DATA_FILE = "./db/json_data.json"
     BATCH_SIZE = 100
+
     SEARCH_SIZE = 3
 
     print("Downloading pre-trained embeddings from tensorflow hub...")
     embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual-large/3")
 
     client = Elasticsearch(http_auth=('elastic', 'dlengus'))
+
     index_data()
 
     print("Done.")

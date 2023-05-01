@@ -51,6 +51,7 @@ def handle_query():
         body= script_query_a
     )
 
+    client.knn_search
 
     search_time = time.time() - search_start
 
