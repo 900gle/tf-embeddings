@@ -1,0 +1,63 @@
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "multi_match": {
+                "query": "${KEYWORD}",
+                "fields": [
+                  "name",
+                  "category"
+                ]
+              }
+            }
+          ],
+          "should": [
+            {
+              "multi_match": {
+                "query": "${KEYWORD}",
+                "fields": [
+                  "category1",
+                  "category2",
+                  "category3",
+                  "category4",
+                  "category5"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "functions": [
+        {
+          "filter": {
+            "match": {
+              "name": "${KEYWORD}"
+            }
+          },
+          "random_score": {},
+          "weight": 1
+        }
+      ]
+    }
+  },
+  "knn": {
+    "field": "name_vector",
+    "query_vector": ${query_vector},
+    "k": 5,
+    "num_candidates": 50,
+    "boost": 0.1
+  },
+  "_source": {
+    "includes": [
+      "name",
+      "category"
+    ],
+    "excludes": [
+      "feature_vector"
+    ]
+  },
+  "size": ${SEARCH_SIZE}
+}

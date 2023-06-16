@@ -9,7 +9,7 @@ from elasticsearch.helpers import bulk
 import tensorflow_hub as hub
 import tensorflow_text
 import kss, numpy
-
+from random import *
 
 def is_number(x):
     try:
@@ -38,7 +38,7 @@ def index_data():
                 header = line
             else:
                 row_dict = {'private_ip': line[0], 'public_ip': line[1], 'country_code': line[2], 'city': line[3],
-                            'addr1': line[4], 'location': {'lat':line[5], 'lon': line[6]}, 'no': line[7], 'country': line[8]}
+                            'addr1': line[4], 'location': {'lat':line[5], 'lon': line[6]}, 'no': line[7], 'country': line[8], 'num': randint(1, 10000) }
 
                 if is_number(line[5]) and is_number(line[6]):
                     csv_mapping_list.append(row_dict)
@@ -65,6 +65,7 @@ def index_batch_a(docs):
         request["_index"] = INDEX_NAME_A
         requests.append(request)
     bulk(client, requests, pipeline='timestamp')
+    # bulk(client, requests)
 
 
 ##### MAIN SCRIPT #####
