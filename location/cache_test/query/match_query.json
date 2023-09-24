@@ -1,0 +1,10 @@
+{
+  "query": {
+    "multi_match": {
+      "query": "{keyword}",
+      "fields": [
+        "country_code"
+      ]
+    }
+  }
+}

@@ -16,6 +16,14 @@
         "type": "dense_vector",
         "dims": 512
       },
+      "category_vector": {
+        "type": "dense_vector",
+        "dims": 512
+      },
+      "feature_vector": {
+        "type": "dense_vector",
+        "dims": 512
+      },
       "price": {
         "type": "double"
       },

@@ -59,37 +59,52 @@ def index_data():
 
 def index_batch_a(docs):
     name = [doc["name"] for doc in docs]
+    category = [doc["name"] for doc in docs]
     name_vectors = embed_text(name)
+    category_vectors = embed_text(category)
+    feature_vectors = embed_text(name + category)
     requests = []
     for i, doc in enumerate(docs):
         request = doc
         request["_op_type"] = "index"
         request["_index"] = INDEX_NAME_A
         request["name_vector"] = name_vectors[i]
+        request["category_vector"] = category_vectors[i]
+        request["feature_vector"] = feature_vectors[i]
         requests.append(request)
     bulk(client, requests)
 
 def index_batch_b(docs):
     name = [doc["name"] for doc in docs]
+    category = [doc["name"] for doc in docs]
     name_vectors = embed_text(name)
+    category_vectors = embed_text(category)
+    feature_vectors = embed_text(name + category)
     requests = []
     for i, doc in enumerate(docs):
         request = doc
         request["_op_type"] = "index"
         request["_index"] = INDEX_NAME_B
         request["name_vector"] = name_vectors[i]
+        request["category_vector"] = category_vectors[i]
+        request["feature_vector"] = feature_vectors[i]
         requests.append(request)
     bulk(client, requests)
 
 def index_batch_c(docs):
     name = [doc["name"] for doc in docs]
+    category = [doc["name"] for doc in docs]
     name_vectors = embed_text(name)
+    category_vectors = embed_text(category)
+    feature_vectors = embed_text(name + category)
     requests = []
     for i, doc in enumerate(docs):
         request = doc
         request["_op_type"] = "index"
         request["_index"] = INDEX_NAME_C
         request["name_vector"] = name_vectors[i]
+        request["category_vector"] = category_vectors[i]
+        request["feature_vector"] = feature_vectors[i]
         requests.append(request)
     bulk(client, requests)
 

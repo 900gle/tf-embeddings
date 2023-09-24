@@ -28,18 +28,18 @@ def handle_query():
 
     with open(ANN) as index_file:
         script_query_a = index_file.read().strip()
-        script_query_a = script_query_a.replace("${query_vector}", str(query_vector))
-        script_query_a = script_query_a.replace("${SEARCH_SIZE}", str(SEARCH_SIZE))
+        script_query_a = script_query_a.replace("{query_vector}", str(query_vector))
+        script_query_a = script_query_a.replace("{SEARCH_SIZE}", str(SEARCH_SIZE))
 
     with open(KNN) as index_file:
         script_query_b = index_file.read().strip()
-        script_query_b = script_query_b.replace("${query_vector}", str(query_vector))
-        script_query_b = script_query_b.replace("${SEARCH_SIZE}", str(SEARCH_SIZE))
+        script_query_b = script_query_b.replace("{query_vector}", str(query_vector))
+        script_query_b = script_query_b.replace("{SEARCH_SIZE}", str(SEARCH_SIZE))
 
     with open(MATCH) as index_file:
         script_query_c = index_file.read().strip()
-        script_query_c = script_query_c.replace("${query}", str(query))
-        script_query_c = script_query_c.replace("${SEARCH_SIZE}", str(SEARCH_SIZE))
+        script_query_c = script_query_c.replace("{query}", str(query))
+        script_query_c = script_query_c.replace("{SEARCH_SIZE}", str(SEARCH_SIZE))
 
     search_start = time.time()
     response_a = client.search(
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     KNN = "ann/query/knn_query.json"
     MATCH = "ann/query/match_query.json"
 
-    SEARCH_SIZE = 5
+    SEARCH_SIZE = 10
 
     print("Downloading pre-trained embeddings from tensorflow hub...")
     embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual-large/3")

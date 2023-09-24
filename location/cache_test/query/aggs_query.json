@@ -1,0 +1,13 @@
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "COUNTRY": {
+      "terms": {
+        "field": "country_code"
+      }
+    }
+  }
+}

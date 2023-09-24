@@ -2,10 +2,10 @@
   "query": {
     "match": {
       "name": {
-        "query": "${query}",
+        "query": "{query}",
         "boost": 0.9
       }
     }
   },
-  "size": ${SEARCH_SIZE}
+  "size": {SEARCH_SIZE}
 }

@@ -1,0 +1,29 @@
+{
+  "query": {
+    "match_all": {}
+  },
+  "knn": [
+    {
+      "field": "name_vector",
+      "query_vector": {query_vector},
+      "k": 5,
+      "num_candidates": 50,
+      "boost": 0.1
+    },
+    {
+      "field": "category_vector",
+      "query_vector": {query_vector},
+      "k": 5,
+      "num_candidates": 50,
+      "boost": 0.1
+    },
+    {
+      "field": "feature_vector",
+      "query_vector": {query_vector},
+      "k": 10,
+      "num_candidates": 10,
+      "boost": 0.5
+    }
+  ],
+  "size": {SEARCH_SIZE}
+}

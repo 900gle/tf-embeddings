@@ -10,6 +10,9 @@ import tensorflow_hub as hub
 import tensorflow_text
 import kss, numpy
 from random import *
+import traceback
+from kafka import KafkaProducer
+
 
 def is_number(x):
     try:
@@ -21,12 +24,7 @@ def is_number(x):
 
 ##### INDEXING #####
 def index_data():
-    print("Creating the '" + INDEX_NAME_A + "' index.")
-    client.indices.delete(index=INDEX_NAME_A, ignore=[404])
 
-    with open(INDEX_FILE_A) as index_file:
-        source = index_file.read().strip()
-        client.indices.create(index=INDEX_NAME_A, body=source)
 
     csv_mapping_list = []
     with open(DATA_FILE) as my_data:
@@ -41,38 +39,29 @@ def index_data():
                             'addr1': line[4], 'location': {'lat':line[5], 'lon': line[6]}, 'no': line[7], 'country': line[8], 'num': randint(1, 10000) }
 
                 if is_number(line[5]) and is_number(line[6]):
-                    csv_mapping_list.append(row_dict)
+                    producer(row_dict)
             line_count += 1
 
-            if line_count % BATCH_SIZE == 0:
-                index_batch_a(csv_mapping_list)
-                csv_mapping_list = []
+def producer(messege):
+    producer = KafkaProducer(
+        bootstrap_servers=['localhost:9092'],
+        client_id='5amsung',
+        key_serializer=None,
+        value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
-                print("Indexed {} documents.".format(line_count))
-        if csv_mapping_list:
-            index_batch_a(csv_mapping_list)
-            print("Indexed {} documents.".format(line_count))
+    try:
+        response = producer.send(topic='5amsung', value=messege).get()
+    except:
+        traceback.print_exc()
 
-    client.indices.refresh(index=INDEX_NAME_A)
-    print("Done indexing.")
-
-
-def index_batch_a(docs):
-    requests = []
-    for i, doc in enumerate(docs):
-        request = doc
-        request["_op_type"] = "index"
-        request["_index"] = INDEX_NAME_A
-        requests.append(request)
-    bulk(client, requests, pipeline='timestamp')
-    # bulk(client, requests)
+    print(response)
 
 
 ##### MAIN SCRIPT #####
 if __name__ == '__main__':
     INDEX_NAME_A = "location-index"
-    INDEX_FILE_A = "../../data/location/index.json"
-    DATA_FILE = "../../data/dbip-location-2016-01.csv"
+    INDEX_FILE_A = "./data/location/index.json"
+    DATA_FILE = "./data/dbip-location-2016-01.csv"
     BATCH_SIZE = 5000
     client = Elasticsearch(http_auth=('elastic', 'dlengus'))
     index_data()

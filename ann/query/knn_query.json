@@ -7,10 +7,10 @@
       "script": {
         "source": "cosineSimilarity(params.query_vector, 'name_vector') + 1.0",
         "params": {
-          "query_vector": ${query_vector}
+          "query_vector": {query_vector}
         }
       }
     }
   },
-  "size": ${SEARCH_SIZE}
+  "size": {SEARCH_SIZE}
 }

@@ -129,7 +129,7 @@ if __name__ == '__main__':
     INDEX_FILE_C = "./data/products/knn-index.json"
 
 
-    DATA_FILE = "./data/products/goods.json"
+    DATA_FILE = "./db/json_data.json"
     BATCH_SIZE = 100
 
     SEARCH_SIZE = 3

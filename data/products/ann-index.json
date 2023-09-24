@@ -19,6 +19,18 @@
         "index": true,
         "similarity": "l2_norm"
       },
+      "category_vector": {
+        "type": "dense_vector",
+        "dims": 512,
+        "index": true,
+        "similarity": "l2_norm"
+      },
+      "feature_vector": {
+        "type": "dense_vector",
+        "dims": 512,
+        "index": true,
+        "similarity": "l2_norm"
+      },
       "price": {
         "type": "double"
       },
