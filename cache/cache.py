@@ -1,0 +1,135 @@
+# -*- coding: utf-8 -*-
+import time
+import json
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+
+import requests
+import ssl
+import urllib3
+from time import sleep
+from urllib import parse
+
+print(ssl.OPENSSL_VERSION)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+f_v = open("./data/lazy_keyword.txt", 'w')
+
+
+def csv_data():
+    time_a = []
+    arr_node1 = []
+    arr_node2 = []
+    arr_node3 = []
+
+    arr_req1 = []
+    arr_req2 = []
+    arr_req3 = []
+
+    with open(CSV_FILE) as data_file:
+        for line in data_file:
+            line = parse.quote(line.strip())
+            time_a.append(query_a(line))
+            node1, node2, node3, req1, req2, req3 = query_cache_monitoring()
+            arr_node1.append(node1)
+            arr_node2.append(node2)
+            arr_node3.append(node3)
+            arr_req1.append(req1)
+            arr_req2.append(req2)
+            arr_req3.append(req3)
+
+
+    print("api time 평균 : " + str(round(np.mean(time_a), 2)))
+
+    t = range(0, len(time_a))
+    plt.rcParams['font.family'] = 'AppleGothic'
+
+    fs = 1
+    y = time_a
+
+    # Plot the raw time series
+    fig, axs = plt.subplot_mosaic([
+        ['time', 'time', 'time'],
+        ['node1', 'node2', 'node3'],
+    ], layout='constrained')
+
+    axs['time'].plot(t, y, lw=lw)
+    axs['time'].set_xlabel(str(len(time_a)) + '회')
+    axs['time'].set_ylabel('Time(ms)')
+
+    axs['node1'].plot(t, arr_node1, lw=lw)
+    axs['node1'].plot(t, arr_req1, lw=lw)
+    # axs['node1'].psd(arr_node1, NFFT=len(t), pad_to=len(t), Fs=fs)
+    axs['node1'].set_ylabel('Cache')
+
+    axs['node2'].plot(t, arr_node2, lw=lw)
+    axs['node2'].plot(t, arr_req2, lw=lw)
+    # axs['node2'].psd(arr_node2, NFFT=len(t), pad_to=len(t), Fs=fs)
+    axs['node2'].set_ylabel('')
+
+    # Plot the PSD with different amounts of overlap between blocks
+    axs['node3'].plot(t, arr_node3, lw=lw)
+    axs['node3'].plot(t, arr_req3, lw=lw)
+    # axs['node3'].psd(arr_node3, NFFT=len(t) // 2, pad_to=len(t), noverlap=0, Fs=fs)
+    axs['node3'].set_ylabel('')
+    axs['node3'].set_title('node3')
+
+    for title, ax in axs.items():
+        if title == 'time':
+            continue
+
+        ax.set_title(title)
+        ax.sharex(axs['node1'])
+        ax.sharey(axs['node1'])
+
+    plt.show()
+
+
+def query_a(line):
+    search_start = time.time()
+    url = "https://totalsearch-api-qa.homeplus.kr/home/1.0/total/search?sort=RANK&inputKeyword=" + line + "&searchKeyword=" + line + "&page=1&perPage=20&recall=Y"
+    requests.get(url, verify=False)
+    search_time = (time.time() - search_start) * 1000
+
+    if (search_time > 200):
+        f_v.write(parse.unquote(line) + " 실행시간 : " + str(round(np.mean(search_time), 2)) + " (ms)\n")
+        # f_v.write(parse.unquote(keyword)+ "\n")
+    return search_time
+
+
+def query_cache_monitoring():
+    data = client.nodes.stats()
+    node1 = data["nodes"]["vGT_Ao0pQoa5fXxCiD9vPQ"]["indices"]
+    node2 = data["nodes"]["2b7CiYd8RFCtgA5P3LurIQ"]["indices"]
+    node3 = data["nodes"]["T_0Pwn-1STOpEQCThXNmKw"]["indices"]
+    return node1["query_cache"]["memory_size_in_bytes"] / div, node2["query_cache"]["memory_size_in_bytes"] / div, \
+           node3["query_cache"]["memory_size_in_bytes"] / div, node1["request_cache"]["memory_size_in_bytes"] / div, node2["request_cache"]["memory_size_in_bytes"] / div, \
+           node3["request_cache"]["memory_size_in_bytes"] / div
+
+
+def request_cache_monitoring():
+    data = client.nodes.stats()
+    node1 = data["nodes"]["vGT_Ao0pQoa5fXxCiD9vPQ"]["indices"]
+    node2 = data["nodes"]["2b7CiYd8RFCtgA5P3LurIQ"]["indices"]
+    node3 = data["nodes"]["T_0Pwn-1STOpEQCThXNmKw"]["indices"]
+    return node1["request_cache"]["memory_size_in_bytes"] / div, node2["request_cache"]["memory_size_in_bytes"] / div, \
+           node3["request_cache"]["memory_size_in_bytes"] / div
+
+
+##### MAIN SCRIPT #####
+
+if __name__ == '__main__':
+    CSV_FILE = "./cache_keyword500.csv"
+    client = Elasticsearch("https://id:pw!@search.doo.kr:443/", ca_certs=False,
+                           verify_certs=False)
+
+    # client.indices.clear_cache()
+    div = 100000
+    lw = 0.7
+    csv_data()
+    f_v.close()
+
+    print("Done.")

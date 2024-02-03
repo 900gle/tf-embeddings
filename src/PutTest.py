@@ -76,13 +76,8 @@ def index_batch(docs):
 ##### EMBEDDING #####
 
 def embed_text(name):
-
     print(name)
-
-
     vectors = model(name)
-
-
     return [vector.numpy().tolist() for vector in vectors]
 
 
