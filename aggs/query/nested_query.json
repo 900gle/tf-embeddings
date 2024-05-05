@@ -1,0 +1,40 @@
+{
+  "size": 0,
+  "query": {
+    "nested": {
+      "path": "promos",
+      "query": {
+        "bool": {
+          "filter": [
+            {
+              "term": {
+                "promos.promo": "{promo_no}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "aggs": {
+    "nested_promos": {
+      "nested": {
+        "path": "promos"
+      },
+      "aggs": {
+        "PROMO": {
+          "terms": {
+            "field": "promos.promo"
+          },
+          "aggs": {
+            "THEME": {
+              "terms": {
+                "field": "promos.theme"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -15,5 +15,5 @@ PyMySQL
 cryptography
 plotly
 kafka-python
-
+aiohttp
 

@@ -1,0 +1,28 @@
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "term": {
+            "promos.promo": "{promo_no}"
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "PROMO": {
+      "terms": {
+        "field": "promos.promo"
+      },
+      "aggs": {
+        "THEME": {
+          "terms": {
+            "field": "promos.theme"
+          }
+        }
+      }
+    }
+  }
+}

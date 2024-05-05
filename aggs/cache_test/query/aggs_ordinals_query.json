@@ -1,0 +1,13 @@
+{
+  "size": 0,
+  "query": {
+    "match_all": {}
+  },
+  "aggs": {
+    "COUNTRY_ORDINALS": {
+      "terms": {
+        "field": "country_code_ordinals"
+      }
+    }
+  }
+}
